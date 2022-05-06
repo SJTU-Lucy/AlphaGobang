@@ -8,11 +8,6 @@ from app.View.main_window import MainWindow
 app = QApplication(sys.argv)
 app.setAttribute(Qt.AA_DontCreateNativeWidgetSiblings)
 
-# 设置语言
-translator = QTranslator()
-translator.load(QLocale.system(), ':/i18n/AlphaGobangZero_')
-app.installTranslator(translator)
-
 # 创建主界面
 w = MainWindow(board_len=9)
 w.show()

@@ -65,13 +65,12 @@ class ChessBoardInterface(QWidget):
         self.isHumanFirst = is_human_first
         self.contextMenu = ChessBoardMenu(self)
         self.chessBoard = ChessBoard(self.boardLen, n_feature_planes=6)
-        self.aiThread = AIThread(
-            self.chessBoard, model, c_puct, n_mcts_iters, is_use_gpu, parent=self)
+        self.aiThread = AIThread(self.chessBoard, model, c_puct, n_mcts_iters, is_use_gpu, parent=self)
         self.humanColor = ChessBoard.BLACK if is_human_first else ChessBoard.WHITE
         self.AIColor = ChessBoard.BLACK if not is_human_first else ChessBoard.WHITE
 
         # 根据棋盘大小调整网格大小
-        self.gridSize=78 - (max(11, boardLen)-11)*5
+        self.gridSize = 78 - (max(11, boardLen)-11)*5
 
         self.__initWidget()
 

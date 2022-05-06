@@ -32,6 +32,7 @@ def exception_handler(train_func):
 
     return wrapper
 
+
 class PolicyValueLoss(nn.Module):
     """ 根据 self-play 产生的 `z` 和 `π` 计算误差 """
 
@@ -115,19 +116,15 @@ class TrainModel:
         self.is_save_game = is_save_game
         self.check_frequency = check_frequency
         self.start_train_size = start_train_size
-        self.device = torch.device(
-            'cuda:0' if is_use_gpu and cuda.is_available() else 'cpu')
+        self.device = torch.device('cuda:0' if is_use_gpu and cuda.is_available() else 'cpu')
         self.chess_board = ChessBoard(board_len, n_feature_planes)
         # 创建策略-价值网络和蒙特卡洛搜索树
         self.policy_value_net = self.__get_policy_value_net()
-        self.mcts = AlphaZeroMCTS(
-            self.policy_value_net, c_puct=c_puct, n_iters=n_mcts_iters, is_self_play=True)
+        self.mcts = AlphaZeroMCTS(self.policy_value_net, c_puct=c_puct, n_iters=n_mcts_iters, is_self_play=True)
         # 创建优化器和损失函数
-        self.optimizer = optim.Adam(
-            self.policy_value_net.parameters(), lr=lr, weight_decay=1e-4)
+        self.optimizer = optim.Adam(self.policy_value_net.parameters(), lr=lr, weight_decay=1e-4)
         self.criterion = PolicyValueLoss()
-        self.lr_scheduler = MultiStepLR(
-            self.optimizer, [1500, 2500], gamma=0.1)
+        self.lr_scheduler = MultiStepLR(self.optimizer, [1500, 2500], gamma=0.1)
         # 创建数据集
         self.dataset = SelfPlayDataSet(board_len)
         # 记录数据
@@ -178,11 +175,9 @@ class TrainModel:
         if self.is_save_game:
             self.games.append(action_list)
 
-        self_play_data = SelfPlayData(
-            pi_list=pi_list, z_list=z_list, feature_planes_list=feature_planes_list)
+        self_play_data = SelfPlayData(pi_list=pi_list, z_list=z_list, feature_planes_list=feature_planes_list)
         return self_play_data
 
-    @exception_handler
     def train(self):
         """ 训练模型 """
         for i in range(self.n_self_plays):
@@ -191,8 +186,7 @@ class TrainModel:
 
             # 如果数据集中的数据量大于 start_train_size 就进行一次训练
             if len(self.dataset) >= self.start_train_size:
-                data_loader = iter(DataLoader(
-                    self.dataset, self.batch_size, shuffle=True, drop_last=False))
+                data_loader = iter(DataLoader(self.dataset, self.batch_size, shuffle=True, drop_last=False))
                 print('💊 开始训练...')
 
                 self.policy_value_net.train()
@@ -298,7 +292,6 @@ class TrainModel:
             with open(f'log/{game_name}.json', 'w', encoding='utf-8') as f:
                 json.dump(self.games, f)
 
-
     def __do_mcts_action(self, mcts):
         """ 获取动作 """
         action = mcts.get_action(self.chess_board)
@@ -311,15 +304,14 @@ class TrainModel:
         os.makedirs('model', exist_ok=True)
 
         best_model = 'best_policy_value_net.pth'
-        history_models = sorted(
-            [i for i in os.listdir('model') if i.startswith('last')])
+        history_models = sorted([i for i in os.listdir('model') if i.startswith('last')])
 
         # 从历史模型中选取最新模型
         model = history_models[-1] if history_models else best_model
         model = f'model/{model}'
         if os.path.exists(model):
             print(f'💎 载入模型 {model} ...\n')
-            net = torch.load(model).to(self.device)  # type:PolicyValueNet
+            net = torch.load(model).to(self.device)
             net.set_device(self.is_use_gpu)
         else:
             net = PolicyValueNet(n_feature_planes=self.chess_board.n_feature_planes,

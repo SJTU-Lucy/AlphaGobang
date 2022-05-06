@@ -5,8 +5,7 @@ import torch
 from torch import Tensor
 from torch.utils.data import Dataset
 
-SelfPlayData = namedtuple(
-    'SelfPlayData', ['pi_list', 'z_list', 'feature_planes_list'])
+SelfPlayData = namedtuple('SelfPlayData', ['pi_list', 'z_list', 'feature_planes_list'])
 
 
 class SelfPlayDataSet(Dataset):

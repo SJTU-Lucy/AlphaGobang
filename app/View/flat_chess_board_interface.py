@@ -61,7 +61,6 @@ class FlatChessBoardInterface(QWidget):
 
     def drawGame(self, actions: list):
         """ 绘制棋谱
-
         Parameters
         ----------
         actions: list
