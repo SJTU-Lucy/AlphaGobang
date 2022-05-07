@@ -54,17 +54,12 @@ class MainWindow(FramelessWindow):
 
     def connectSignalToSlot(self):
         """ 信号连接到槽 """
-        self.settingInterface.enableAcrylicChanged.connect(
-            self.setWindowEffect)
+        self.settingInterface.enableAcrylicChanged.connect(self.setWindowEffect)
         self.chessBoardInterface.exitGameSignal.connect(self.exitGame)
-        self.chessBoardInterface.restartGameSignal.connect(
-            self.updateGameConfig)
-        self.chessBoardInterface.switchToSettingInterfaceSignal.connect(
-            self.switchToSettingInterface)
-        self.navigationInterface.switchToChessBoardInterfaceSig.connect(
-            self.switchToChessBoardInterface)
-        self.navigationInterface.switchToSettingInterfaceSig.connect(
-            self.switchToSettingInterface)
+        self.chessBoardInterface.restartGameSignal.connect(self.updateGameConfig)
+        self.chessBoardInterface.switchToSettingInterfaceSignal.connect(self.switchToSettingInterface)
+        self.navigationInterface.switchToChessBoardInterfaceSig.connect(self.switchToChessBoardInterface)
+        self.navigationInterface.switchToSettingInterfaceSig.connect(self.switchToSettingInterface)
 
     def closeEvent(self, e):
         self.settingInterface.saveConfig()
