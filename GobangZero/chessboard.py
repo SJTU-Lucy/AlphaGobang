@@ -1,22 +1,15 @@
-#!/usr/bin/env python
-# -*- coding:utf-8 -*-
+import common
 
-# ----------------------------------------------------------------------
-# 定义棋子类型，输赢情况
-# ----------------------------------------------------------------------
-EMPTY = 0
-BLACK = 1
-WHITE = 2
+SIZE = common.size
+EMPTY = common.empty
+BLACK = common.black
+WHITE = common.white
 
 
-# ----------------------------------------------------------------------
-# 定义棋盘类，绘制棋盘的形状，切换先后手，判断输赢等
-# ----------------------------------------------------------------------
 class ChessBoard(object):
     def __init__(self):
-        self.__board = [[EMPTY for n in range(15)] for m in range(15)]
+        self.__board = [[EMPTY for n in range(SIZE)] for m in range(15)]
         self.__dir = [[(-1, 0), (1, 0)], [(0, -1), (0, 1)], [(-1, 1), (1, -1)], [(-1, -1), (1, 1)]]
-        #                (左      右)      (上       下)     (左下     右上)      (左上     右下)
 
     def board(self):  # 返回数组对象
         return self.__board
@@ -30,7 +23,7 @@ class ChessBoard(object):
     def get_next_xy(self, point, direction):  # 获取指定点的指定方向的坐标
         x = point[0] + direction[0]
         y = point[1] + direction[1]
-        if x < 0 or x >= 15 or y < 0 or y >= 15:
+        if x < 0 or x >= SIZE or y < 0 or y >= SIZE:
             return False
         else:
             return x, y
@@ -60,4 +53,4 @@ class ChessBoard(object):
         return EMPTY
 
     def reset(self):  # 重置
-        self.__board = [[EMPTY for n in range(15)] for m in range(15)]
+        self.__board = [[EMPTY for n in range(SIZE)] for m in range(15)]
