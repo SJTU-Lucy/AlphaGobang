@@ -53,8 +53,7 @@ class evaluation(object):
             count[2][i] = 0
         return 0
 
-        # 四个方向（水平，垂直，左斜，右斜）分析评估棋盘，再根据结果打分
-
+    # 四个方向（水平，垂直，左斜，右斜）分析评估棋盘，再根据结果打分
     def evaluate(self, board, turn):
         score = self.__evaluate(board, turn)
         count = self.count
@@ -436,7 +435,7 @@ class searcher(object):
     # 初始化
     def __init__(self):
         self.evaluator = evaluation()
-        self.board = [[0 for n in range(15)] for i in range(15)]
+        self.board = [[0 for n in range(common.size)] for i in range(common.size)]
         self.gameover = 0
         self.overvalue = 0
         self.maxdepth = 3

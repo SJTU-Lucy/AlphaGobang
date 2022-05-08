@@ -1,13 +1,10 @@
 import torch
 from torch import nn
 from torch.nn import functional as F
-
-from chess_board import ChessBoard
+from chessboard import ChessBoard
 
 
 class ConvBlock(nn.Module):
-    """ 卷积块 """
-
     def __init__(self, in_channels: int, out_channel: int, kernel_size, padding=0):
         super().__init__()
         self.conv = nn.Conv2d(in_channels, out_channel,
@@ -19,8 +16,6 @@ class ConvBlock(nn.Module):
 
 
 class ResidueBlock(nn.Module):
-    """ 残差块 """
-
     def __init__(self, in_channels=128, out_channels=128):
         """
         Parameters
@@ -34,10 +29,8 @@ class ResidueBlock(nn.Module):
         super().__init__()
         self.in_channels = in_channels
         self.out_channels = out_channels
-        self.conv1 = nn.Conv2d(in_channels, out_channels,
-                               kernel_size=3, stride=1, padding=1)
-        self.conv2 = nn.Conv2d(out_channels, out_channels,
-                               kernel_size=3, stride=1, padding=1)
+        self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=1, padding=1)
+        self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=3, stride=1, padding=1)
         self.batch_norm1 = nn.BatchNorm2d(num_features=out_channels)
         self.batch_norm2 = nn.BatchNorm2d(num_features=out_channels)
 
@@ -48,18 +41,7 @@ class ResidueBlock(nn.Module):
 
 
 class PolicyHead(nn.Module):
-    """ 策略头 """
-
     def __init__(self, in_channels=128, board_len=9):
-        """
-        Parameters
-        ----------
-        in_channels: int
-            输入通道数
-
-        board_len: int
-            棋盘大小
-        """
         super().__init__()
         self.board_len = board_len
         self.in_channels = in_channels
@@ -73,18 +55,7 @@ class PolicyHead(nn.Module):
 
 
 class ValueHead(nn.Module):
-    """ 价值头 """
-
     def __init__(self, in_channels=128, board_len=9):
-        """
-        Parameters
-        ----------
-        in_channels: int
-            输入通道数
-
-        board_len: int
-            棋盘大小
-        """
         super().__init__()
         self.in_channels = in_channels
         self.board_len = board_len
@@ -103,8 +74,6 @@ class ValueHead(nn.Module):
 
 
 class PolicyValueNet(nn.Module):
-    """ 策略价值网络 """
-
     def __init__(self, board_len=9, n_feature_planes=6, is_use_gpu=True):
         """
         Parameters
@@ -150,7 +119,6 @@ class PolicyValueNet(nn.Module):
 
     def predict(self, chess_board: ChessBoard):
         """ 获取当前局面上所有可用 `action` 和他对应的先验概率 `P(s, a)`，以及局面的 `value`
-
         Parameters
         ----------
         chess_board: ChessBoard
@@ -177,6 +145,5 @@ class PolicyValueNet(nn.Module):
         return p, value[0].item()
 
     def set_device(self, is_use_gpu: bool):
-        """ 设置神经网络运行设备 """
         self.is_use_gpu = is_use_gpu
         self.device = torch.device('cuda:0' if is_use_gpu else 'cpu')

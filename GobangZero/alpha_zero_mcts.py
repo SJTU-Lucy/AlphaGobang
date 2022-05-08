@@ -1,13 +1,12 @@
 from typing import Tuple, Union
 import numpy as np
-from chess_board import ChessBoard
+from chessboard import ChessBoard
 from node import Node
 from policy_value_net import PolicyValueNet
+import common
 
 
 class AlphaZeroMCTS:
-    """ 基于策略-价值网络的蒙特卡洛搜索树 """
-
     def __init__(self, policy_value_net: PolicyValueNet, c_puct: float = 4, n_iters=1200, is_self_play=False) -> None:
         """
         Parameters
@@ -54,16 +53,15 @@ class AlphaZeroMCTS:
             node = self.root
             while not node.is_leaf_node():
                 action, node = node.select()
-                board.do_action(action)
+                board.draw(action/common.size, action%common.size)
 
             # 判断游戏是否结束，如果没结束就拓展叶节点
-            is_over, winner = board.is_game_over()
+            winner = board.judge()
             p, value = self.policy_value_net.predict(board)
-            if not is_over:
+            if winner != common.empty:
                 # 添加狄利克雷噪声
                 if self.is_self_play:
-                    p = 0.75*p + 0.25 * \
-                        np.random.dirichlet(0.03*np.ones(len(p)))
+                    p = 0.75*p + 0.25 * np.random.dirichlet(0.03*np.ones(len(p)))
                 node.expand(zip(board.available_actions, p))
             elif winner is not None:
                 value = 1 if winner == board.current_player else -1

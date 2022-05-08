@@ -111,17 +111,17 @@ class GoBang(QWidget):
     def draw(self, i, j):
         x, y = self.map_pixel(i, j)
         if self.piece_now == BLACK:
-            self.pieces[self.step].setPixmap(self.black)  # 放置黑色棋子
+            self.pieces[self.step].setPixmap(self.black)
             self.piece_now = WHITE
             self.chessboard.draw(i, j, BLACK)
         else:
-            self.pieces[self.step].setPixmap(self.white)  # 放置白色棋子
+            self.pieces[self.step].setPixmap(self.white)
             self.piece_now = BLACK
             self.chessboard.draw(i, j, WHITE)
-        self.pieces[self.step].setGeometry(x, y, PIECE, PIECE)  # 画出棋子
-        self.step += 1  # 步数+1
+        self.pieces[self.step].setGeometry(x, y, PIECE, PIECE)
+        self.step += 1
 
-        winner = self.chessboard.judge(i, j)  # 判断输赢
+        winner = self.chessboard.judge()  # 判断输赢
         if winner != EMPTY:
             self.mouse_point.clear()
             self.gameover(winner)
