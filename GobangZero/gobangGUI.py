@@ -22,9 +22,6 @@ PATH = common.modelpath
 class GoBang(QWidget):
     def __init__(self):
         super().__init__()
-        self.initUI()
-
-    def initUI(self):
         # 棋盘
         self.chessboard = ChessBoard()
 
@@ -93,10 +90,8 @@ class GoBang(QWidget):
                     self.ai_down = False
                     board = self.chessboard.board()
                     # 白子下一步
-                    # self.AI = AI(board)  # 新建线程对象，传入棋盘参数
-                    # self.AI.finishSignal.connect(self.AI_draw)  # 结束线程，传出参数
-                    # self.AI.start()
-                    self.AI = AIThread(board, model=PATH)
+                    # self.AI = AIThread(board, PATH)
+                    self.AI = AIThread(board)
                     self.AI.finishSignal.connect(self.AI_draw)
                     self.AI.start()
 
@@ -113,11 +108,11 @@ class GoBang(QWidget):
         if self.piece_now == BLACK:
             self.pieces[self.step].setPixmap(self.black)
             self.piece_now = WHITE
-            self.chessboard.draw(i, j, BLACK)
+            self.chessboard.draw(i, j, state=BLACK)
         else:
             self.pieces[self.step].setPixmap(self.white)
             self.piece_now = BLACK
-            self.chessboard.draw(i, j, WHITE)
+            self.chessboard.draw(i, j, state=WHITE)
         self.pieces[self.step].setGeometry(x, y, PIECE, PIECE)
         self.step += 1
 

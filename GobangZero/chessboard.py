@@ -36,7 +36,7 @@ class ChessBoard(object):
             self.state[x * SIZE + y] = state
         self.previous_action = x * SIZE + y
         self.current_player = BLACK + WHITE - self.current_player
-        self.available_actions.remove(x*SIZE+y)
+        self.available_actions.remove(x * SIZE + y)
 
     # 获取指定点坐标的状态
     def get(self, x, y):
@@ -62,9 +62,10 @@ class ChessBoard(object):
 
     # 检测是否存在五子相连
     def judge(self):
-        x = self.previous_action / common.size
+        x = self.previous_action // common.size
         y = self.previous_action % common.size
         state = self.get(x, y)
+        # 在四个方向上分别检查
         for directions in self.__dir:
             count = 1
             for direction in directions:
@@ -89,13 +90,11 @@ class ChessBoard(object):
 
     # 复制棋盘
     def copy(self):
-        """ 复制棋盘 """
         return deepcopy(self)
 
     # 棋盘状态特征张量
     def get_feature_planes(self) -> torch.Tensor:
-        """ 棋盘状态特征张量，维度为 `(n_feature_planes, board_len, board_len)`
-
+        """ `(n_feature_planes, board_len, board_len)`
         Returns
         -------
         feature_planes: Tensor of shape `(n_feature_planes, board_len, board_len)`

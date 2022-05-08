@@ -53,7 +53,7 @@ class AlphaZeroMCTS:
             node = self.root
             while not node.is_leaf_node():
                 action, node = node.select()
-                board.draw(action/common.size, action%common.size)
+                board.draw(action // common.size, action % common.size)
 
             # 判断游戏是否结束，如果没结束就拓展叶节点
             winner = board.judge()

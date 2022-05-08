@@ -29,6 +29,6 @@ class AIThread(QThread):
 
     def run(self):
         action = self.mcts.get_action(self.chessBoard)
-        x = action / SIZE
+        x = action // SIZE
         y = action % SIZE
         self.finishSignal.emit(x, y)

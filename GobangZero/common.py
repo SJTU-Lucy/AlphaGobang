@@ -7,6 +7,5 @@ height = 540
 margin = 22
 grid = (width - 2 * margin) / (size - 1)
 piece = 34
-# modelpath = '../model/history/best_policy_value_net_4400.pth'
-modelpath = None
+modelpath = '../model/history/best_policy_value_net_4400.pth'
 feature_planes = 7
