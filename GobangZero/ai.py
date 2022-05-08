@@ -1,9 +1,6 @@
-#!/usr/bin/env python
-# -*- coding:utf-8 -*-
+import common
 
 
-# evaluation: 棋盘评估类，给当前棋盘打分用
-# ----------------------------------------------------------------------
 class evaluation(object):
     def __init__(self):
         self.POS = []
@@ -435,11 +432,6 @@ class evaluation(object):
         return 0
 
 
-        # ----------------------------------------------------------------------
-
-
-# DFS: 博弈树搜索
-# ----------------------------------------------------------------------
 class searcher(object):
     # 初始化
     def __init__(self):
@@ -449,8 +441,7 @@ class searcher(object):
         self.overvalue = 0
         self.maxdepth = 3
 
-        # 产生当前棋局的走法
-
+    # 产生当前棋局的走法
     def genmove(self, turn):
         moves = []
         board = self.board
@@ -464,21 +455,19 @@ class searcher(object):
         moves.reverse()
         return moves
 
-        # 递归搜索：返回最佳分数
-
+    # 递归搜索：返回最佳分数
     def __search(self, turn, depth, alpha, beta):
-
         # 深度为零则评估棋盘并返回
         if depth <= 0:
             score = self.evaluator.evaluate(self.board, turn)
             return score
 
-            # 如果游戏结束则立马返回
+        # 如果游戏结束则立马返回
         score = self.evaluator.evaluate(self.board, turn)
         if abs(score) >= 9999 and depth < self.maxdepth:
             return score
 
-            # 产生新的走法
+        # 产生新的走法
         moves = self.genmove(turn)
         bestmove = None
 
@@ -505,16 +494,15 @@ class searcher(object):
                 if alpha >= beta:
                     break
 
-                    # 如果是第一层则记录最好的走法
+        # 如果是第一层则记录最好的走法
         if depth == self.maxdepth and bestmove:
             self.bestmove = bestmove
 
             # 返回当前最好的分数，和该分数的对应走法
         return alpha
 
-        # 具体搜索：传入当前是该谁走(turn=1/2)，以及搜索深度(depth)
-
-    def search(self, turn, depth=3):
+    # DFS搜索：turn代表玩家（2为AI），depth为搜索深度，输出与网络输出一致
+    def get_action(self, chessboard=None, turn=2, depth=2):
         self.maxdepth = depth
         self.bestmove = None
         score = self.__search(turn, depth, -0x7fffffff, 0x7fffffff)
@@ -522,4 +510,4 @@ class searcher(object):
             self.maxdepth = depth
             score = self.__search(turn, 1, -0x7fffffff, 0x7fffffff)
         row, col = self.bestmove
-        return score, row, col
+        return row * common.size + col

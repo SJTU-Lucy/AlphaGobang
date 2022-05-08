@@ -1,8 +1,6 @@
-# coding: utf-8
 from typing import Tuple
 from copy import deepcopy
 from collections import OrderedDict
-
 import torch
 import numpy as np
 
