@@ -108,11 +108,11 @@ class GoBang(QWidget):
         if self.piece_now == BLACK:
             self.pieces[self.step].setPixmap(self.black)
             self.piece_now = WHITE
-            self.chessboard.draw(i, j, state=BLACK)
+            self.chessboard.draw(i, j, player=BLACK)
         else:
             self.pieces[self.step].setPixmap(self.white)
             self.piece_now = BLACK
-            self.chessboard.draw(i, j, state=WHITE)
+            self.chessboard.draw(i, j, player=WHITE)
         self.pieces[self.step].setGeometry(x, y, PIECE, PIECE)
         self.step += 1
 

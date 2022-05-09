@@ -9,6 +9,9 @@ SIZE = common.size
 EMPTY = common.empty
 BLACK = common.black
 WHITE = common.white
+TRANSEMPTY = -1
+TRANSWHITE = 0
+TRANSBLACK = 1
 
 
 class ChessBoard(object):
@@ -26,14 +29,22 @@ class ChessBoard(object):
     def board(self):
         return self.__board
 
+    def trans(self, player):
+        if player == BLACK:
+            return TRANSBLACK
+        if player == WHITE:
+            return TRANSWHITE
+        if player == EMPTY:
+            return TRANSEMPTY
+
     # 修改落子点坐标的状态
-    def draw(self, x, y, state=None):
-        if state is None:
+    def draw(self, x, y, player=None):
+        if player is None:
             self.__board[x][y] = self.current_player
-            self.state[x * SIZE + y] = self.current_player
+            self.state[x * SIZE + y] = self.trans(self.current_player)
         else:
-            self.__board[x][y] = state
-            self.state[x * SIZE + y] = state
+            self.__board[x][y] = player
+            self.state[x * SIZE + y] = self.trans(player)
         self.previous_action = x * SIZE + y
         self.current_player = BLACK + WHITE - self.current_player
         self.available_actions.remove(x * SIZE + y)
@@ -103,13 +114,13 @@ class ChessBoard(object):
         n = self.board_len
         feature_planes = torch.zeros((self.n_feature_planes, n**2))
         # 最后一张图像代表当前玩家颜色
-        # feature_planes[-1] = self.current_player
+        # feature_planes[-1] = self.trans(self.current_player)
         # 添加历史信息
         if self.state:
             actions = np.array(list(self.state.keys()))[::-1]
             players = np.array(list(self.state.values()))[::-1]
-            Xt = actions[players == self.current_player]
-            Yt = actions[players != self.current_player]
+            Xt = actions[players == self.trans(self.current_player)]
+            Yt = actions[players != self.trans(self.current_player)]
             for i in range((self.n_feature_planes-1)//2):
                 if i < len(Xt):
                     feature_planes[2*i, Xt[i:]] = 1
