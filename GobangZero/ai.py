@@ -62,18 +62,15 @@ class evaluation(object):
         score = self.__evaluate(board, turn)
         count = self.count
         if score < -9000:
+            stone = turn == 1 and 2 or 1
             if turn == WHITE:
                 stone = 1
-            else:
+            if turn == BLACK:
                 stone = 2
             for i in range(20):
                 if count[stone][i] > 0:
                     score -= i
         elif score > 9000:
-            if turn == WHITE:
-                turn = 2
-            else:
-                turn = 1
             for i in range(20):
                 if count[turn][i] > 0:
                     score += i
@@ -110,29 +107,27 @@ class evaluation(object):
         for i in range(SIZE):
             for j in range(SIZE):
                 stone = board[i][j]
-                if stone != EMPTY:
+                if stone != 0:
                     for k in range(4):
                         ch = record[i][j][k]
-                        if stone == BLACK:
-                            stone = 1
-                        if stone == WHITE:
-                            stone = 2
                         if ch in check:
-                            count[stone][ch] += 1
+                            if stone == WHITE:
+                                count[2][ch] += 1
+                            if stone == BLACK:
+                                count[1][ch] += 1
 
-        # 如果有五连则马上返回分数
-        if turn == WHITE:
+        if turn == WHITE:  # 当前是白棋
             if count[1][FIVE]:
                 return -9999
             if count[2][FIVE]:
                 return 9999
-        else:
+        else:  # 当前是黑棋
             if count[2][FIVE]:
                 return -9999
-            if count[1][FIVE]:
+            if count[BLACK][FIVE]:
                 return 9999
 
-        # 如果存在两个冲四，则相当于有一个活四
+                # 如果存在两个冲四，则相当于有一个活四
         if count[2][SFOUR] >= 2:
             count[2][FOUR] += 1
         if count[1][SFOUR] >= 2:
@@ -141,17 +136,17 @@ class evaluation(object):
         # 具体打分
         wvalue, bvalue, win = 0, 0, 0
         if turn == WHITE:
-            if count[2][FOUR] > 0:
-                return 9990
-            if count[2][SFOUR] > 0:
-                return 9980
-            if count[1][FOUR] > 0:
-                return -9970
+            if count[2][FOUR] > 0: return 9990
+            if count[2][SFOUR] > 0: return 9980
+            if count[1][FOUR] > 0: return -9970
             if count[1][SFOUR] and count[1][THREE]:
                 return -9960
             if count[2][THREE] and count[1][SFOUR] == 0:
                 return 9950
-            if count[1][THREE] > 1 and count[2][SFOUR] == 0 and count[2][THREE] == 0 and count[2][STHREE] == 0:
+            if count[1][THREE] > 1 and \
+                    count[2][SFOUR] == 0 and \
+                    count[2][THREE] == 0 and \
+                    count[2][STHREE] == 0:
                 return -9940
             if count[2][THREE] > 1:
                 wvalue += 2000
@@ -174,17 +169,17 @@ class evaluation(object):
             if count[1][STWO]:
                 bvalue += count[1][STWO]
         else:
-            if count[1][FOUR] > 0:
-                return 9990
-            if count[1][SFOUR] > 0:
-                return 9980
-            if count[2][FOUR] > 0:
-                return -9970
+            if count[1][FOUR] > 0: return 9990
+            if count[1][SFOUR] > 0: return 9980
+            if count[2][FOUR] > 0: return -9970
             if count[2][SFOUR] and count[2][THREE]:
                 return -9960
             if count[1][THREE] and count[2][SFOUR] == 0:
                 return 9950
-            if count[2][THREE] > 1 and count[1][SFOUR] == 0 and count[1][THREE] == 0 and count[1][STHREE] == 0:
+            if count[2][THREE] > 1 and \
+                    count[1][SFOUR] == 0 and \
+                    count[1][THREE] == 0 and \
+                    count[1][STHREE] == 0:
                 return -9940
             if count[1][THREE] > 1:
                 bvalue += 2000
@@ -487,7 +482,7 @@ class searcher(object):
             # 深度优先搜索，返回评分，走的行和走的列
             score = - self.__search(nturn, depth - 1, -beta, -alpha)
             # 棋盘上清除当前走法
-            self.board[row][col] = 0
+            self.board[row][col] = EMPTY
             # 计算最好分值的走法
             # alpha/beta 剪枝
             if score > alpha:

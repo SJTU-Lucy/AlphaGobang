@@ -52,6 +52,7 @@ class AlphaZeroMCTS:
         for i in range(self.n_iters):
             # 拷贝棋盘
             board = chess_board.copy()
+            print(i)
 
             # 如果没有遇到叶节点，就一直向下搜索并更新棋盘
             node = self.root
@@ -61,8 +62,9 @@ class AlphaZeroMCTS:
 
             # 判断游戏是否结束，如果没结束就拓展叶节点
             is_over, winner = board.is_game_over()
+            print("start prediction")
             p, value = self.policy_value_net.predict(board)
-            print("value = ", value)
+            print("end prediction")
             if not is_over:
                 # 添加狄利克雷噪声
                 if self.is_self_play:

@@ -1,6 +1,6 @@
-empty = 0
+empty = -1
 black = 1
-white = 2
+white = 0
 size = 9
 width = 540
 height = 540
