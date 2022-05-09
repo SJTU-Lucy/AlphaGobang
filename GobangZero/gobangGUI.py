@@ -3,9 +3,9 @@ from PyQt5 import QtCore, QtGui
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QMessageBox
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QIcon, QPalette, QPainter
-from chessboard import ChessBoard
+from alphazero.chess_board import ChessBoard
 from aiThread import AIThread
-import common
+import alphazero.common as common
 
 EMPTY = common.empty
 BLACK = common.black
@@ -27,7 +27,8 @@ class GoBang(QWidget):
 
         # 设置背景
         palette = QPalette()
-        palette.setBrush(self.backgroundRole(), QtGui.QBrush(QtGui.QPixmap('img/chessboard.jpg')))
+        # palette.setBrush(self.backgroundRole(), QtGui.QBrush(QtGui.QPixmap('img/chessboard_15.jpg')))
+        palette.setBrush(self.backgroundRole(), QtGui.QBrush(QtGui.QPixmap('img/chessboard_9.jpg')))
         self.setPalette(palette)
 
         # 鼠标变成手指形状
@@ -88,10 +89,9 @@ class GoBang(QWidget):
                     # 黑子下一步
                     self.draw(i, j)
                     self.ai_down = False
-                    board = self.chessboard.board()
                     # 白子下一步
-                    # self.AI = AIThread(board, PATH)
-                    self.AI = AIThread(board)
+                    self.AI = AIThread(self.chessboard, PATH)             # 载入模型
+                    # self.AI = AIThread(self.chessboard)                 # 无需模型
                     self.AI.finishSignal.connect(self.AI_draw)
                     self.AI.start()
 

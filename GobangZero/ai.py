@@ -1,4 +1,4 @@
-import common
+from alphazero import common
 
 SIZE = common.size
 EMPTY = common.empty

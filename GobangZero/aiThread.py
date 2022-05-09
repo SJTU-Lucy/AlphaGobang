@@ -1,8 +1,7 @@
 import torch
-from alpha_zero_mcts import AlphaZeroMCTS
 from PyQt5.QtCore import QThread, pyqtSignal
 from ai import searcher
-import common
+from alphazero import common, ChessBoard, AlphaZeroMCTS
 
 SIZE = common.size
 
@@ -10,7 +9,7 @@ SIZE = common.size
 class AIThread(QThread):
     finishSignal = pyqtSignal(int, int)
 
-    def __init__(self, chessBoard, model=None, c_puct=5, n_iters=2000, is_use_gpu=True, parent=None):
+    def __init__(self, chessBoard: ChessBoard, model=None, c_puct=5, n_iters=2000, is_use_gpu=True, parent=None):
         super().__init__(parent=parent)
         self.chessBoard = chessBoard
         self.c_puct = c_puct
@@ -25,7 +24,7 @@ class AIThread(QThread):
         else:
             self.model = None
             self.mcts = searcher()
-            self.mcts.board = self.chessBoard
+            self.mcts.board = self.chessBoard.board()
 
     def run(self):
         action = self.mcts.get_action(self.chessBoard)

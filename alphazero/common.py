@@ -1,7 +1,7 @@
 empty = 0
 black = 1
 white = 2
-size = 15
+size = 9
 width = 540
 height = 540
 margin = 22

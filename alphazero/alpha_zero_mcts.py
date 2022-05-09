@@ -62,11 +62,11 @@ class AlphaZeroMCTS:
             # 判断游戏是否结束，如果没结束就拓展叶节点
             is_over, winner = board.is_game_over()
             p, value = self.policy_value_net.predict(board)
+            print("value = ", value)
             if not is_over:
                 # 添加狄利克雷噪声
                 if self.is_self_play:
-                    p = 0.75*p + 0.25 * \
-                        np.random.dirichlet(0.03*np.ones(len(p)))
+                    p = 0.75 * p + 0.25 * np.random.dirichlet(0.03*np.ones(len(p)))
                 node.expand(zip(board.available_actions, p))
             elif winner is not None:
                 value = 1 if winner == board.current_player else -1

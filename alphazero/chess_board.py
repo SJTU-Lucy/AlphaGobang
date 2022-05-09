@@ -2,19 +2,24 @@
 from typing import Tuple
 from copy import deepcopy
 from collections import OrderedDict
+from alphazero import common
 
 import torch
 import numpy as np
+
+SIZE = common.size
+EMPTY = common.empty
+BLACK = common.black
+WHITE = common.white
+TRANSEMPTY = -1
+TRANSWHITE = 0
+TRANSBLACK = 1
 
 
 class ChessBoard:
     """ 棋盘类 """
 
-    EMPTY = -1
-    WHITE = 0
-    BLACK = 1
-
-    def __init__(self, board_len=9, n_feature_planes=7):
+    def __init__(self, board_len=SIZE, n_feature_planes=7):
         """
         Parameters
         ----------
@@ -24,13 +29,13 @@ class ChessBoard:
         n_feature_planes: int
             特征平面的个数，必须为偶数
         """
-        self.board_len = board_len
-        self.current_player = self.BLACK
-        self.n_feature_planes = n_feature_planes
+        self.__board = [[EMPTY for n in range(SIZE)] for m in range(SIZE)]
+        self.__dir = [[(-1, 0), (1, 0)], [(0, -1), (0, 1)], [(-1, 1), (1, -1)], [(-1, -1), (1, 1)]]
+        self.board_len = SIZE
+        self.current_player = BLACK
+        self.n_feature_planes = common.feature_planes
         self.available_actions = list(range(self.board_len**2))
-        # 棋盘状态字典，key 为 action，value 为 current_player
         self.state = OrderedDict()
-        # 上一个落点
         self.previous_action = None
 
     def copy(self):
@@ -39,23 +44,34 @@ class ChessBoard:
 
     def clear_board(self):
         """ 清空棋盘 """
+        self.__board = [[EMPTY for n in range(SIZE)] for m in range(SIZE)]
         self.state.clear()
         self.previous_action = None
-        self.current_player = self.BLACK
+        self.current_player = BLACK
         self.available_actions = list(range(self.board_len**2))
 
-    def do_action(self, action: int):
-        """ 落子并更新棋盘
+    # 重置棋盘
+    def reset(self):
+        self.__board = [[EMPTY for n in range(SIZE)] for m in range(SIZE)]
+        self.state.clear()
+        self.previous_action = None
+        self.current_player = BLACK
+        self.available_actions = list(range(self.board_len ** 2))
 
-        Parameters
-        ----------
-        action: int
-            落子位置，范围为 `[0, board_len^2 -1]`
-        """
+    # 修改落子点坐标的状态
+    def draw(self, x, y, player):
+        self.__board[x][y] = player
+        self.state[x * SIZE + y] = self.trans(player)
+        self.previous_action = x * SIZE + y
+        self.current_player = BLACK + WHITE - self.current_player
+        self.available_actions.remove(x * SIZE + y)
+
+    def do_action(self, action: int):
+        self.__board[action//SIZE][action%SIZE] = self.current_player
+        self.state[action] = self.trans(self.current_player)
         self.previous_action = action
+        self.current_player = WHITE + BLACK - self.current_player
         self.available_actions.remove(action)
-        self.state[action] = self.current_player
-        self.current_player = self.WHITE + self.BLACK - self.current_player
 
     def do_action_(self, pos: tuple) -> bool:
         """ 落子并更新棋盘，只提供给 app 使用
@@ -112,7 +128,7 @@ class ChessBoard:
                 while flag:
                     row_t = row_t + directions[i][j][0]
                     col_t = col_t + directions[i][j][1]
-                    if 0 <= row_t < n and 0 <= col_t < n and self.state.get(row_t*n+col_t, self.EMPTY) == player:
+                    if 0 <= row_t < n and 0 <= col_t < n and self.state.get(row_t*n+col_t, TRANSEMPTY) == player:
                         # 遇到相同颜色时 count+1
                         count += 1
                     else:
@@ -153,8 +169,61 @@ class ChessBoard:
 
         return feature_planes.view(self.n_feature_planes, n, n)
 
+    # 返回数组对象
+    def board(self):
+        return self.__board
+
+    def trans(self, player):
+        if player == BLACK:
+            return TRANSBLACK
+        if player == WHITE:
+            return TRANSWHITE
+        if player == EMPTY:
+            return TRANSEMPTY
+
+    # 获取指定点坐标的状态
+    def get(self, x, y):
+        return self.__board[x][y]
+
+    # 获得指定位置的指定方向坐标
+    def getPos(self, point, direction):
+        x = point[0] + direction[0]
+        y = point[1] + direction[1]
+        if x < 0 or x >= SIZE or y < 0 or y >= SIZE:
+            return False
+        else:
+            return x, y
+
+    # 获得指定位置的指定方向状态
+    def getState(self, point, direction):
+        if point is not False:
+            xy = self.getPos(point, direction)
+            if xy is not False:
+                x, y = xy
+                return self.__board[x][y]
+        return False
+
+    # 检测是否存在五子相连
+    def judge(self):
+        x = self.previous_action // SIZE
+        y = self.previous_action % SIZE
+        state = self.get(x, y)
+        # 在四个方向上分别检查
+        for directions in self.__dir:
+            count = 1
+            for direction in directions:
+                point = (x, y)
+                while True:
+                    if self.getState(point, direction) == state:
+                        count += 1
+                        point = self.getPos(point, direction)
+                    else:
+                        break
+            if count >= 5:
+                return state
+        return EMPTY
+
 
 class ColorError(ValueError):
-
     def __init__(self, *args: object) -> None:
         super().__init__(*args)
