@@ -11,27 +11,17 @@ from .policy_value_net import PolicyValueNet
 class AlphaZeroMCTS:
     """ 基于策略-价值网络的蒙特卡洛搜索树 """
 
-    def __init__(self, policy_value_net: PolicyValueNet, c_puct: float = 4, n_iters=1200, is_self_play=False) -> None:
-        """
-        Parameters
-        ----------
-        policy_value_net: PolicyValueNet
-            策略价值网络
-
-        c_puct: float
-            探索常数
-
-        n_iters: int
-            迭代次数
-
-        is_self_play: bool
-            是否处于自我博弈状态
-        """
+    def __init__(self, policy_value_net: PolicyValueNet, c_puct: float = 5, n_iters=2000, is_self_play=False,
+                 progesssignal=None) -> None:
         self.c_puct = c_puct
         self.n_iters = n_iters
         self.is_self_play = is_self_play
         self.policy_value_net = policy_value_net
         self.root = Node(prior_prob=1, parent=None)
+        self.has_signal = False
+        if progesssignal is not None:
+            self.signal = progesssignal
+            self.has_signal = True
 
     def get_action(self, chess_board: ChessBoard) -> Union[Tuple[int, np.ndarray], int]:
         """ 根据当前局面返回下一步动作
@@ -52,7 +42,8 @@ class AlphaZeroMCTS:
         for i in range(self.n_iters):
             # 拷贝棋盘
             board = chess_board.copy()
-            print(i)
+            if self.has_signal and i % 14 == 0:
+                self.signal.emit(i)
 
             # 如果没有遇到叶节点，就一直向下搜索并更新棋盘
             node = self.root
@@ -62,9 +53,7 @@ class AlphaZeroMCTS:
 
             # 判断游戏是否结束，如果没结束就拓展叶节点
             is_over, winner = board.is_game_over()
-            print("start prediction")
             p, value = self.policy_value_net.predict(board)
-            print("end prediction")
             if not is_over:
                 # 添加狄利克雷噪声
                 if self.is_self_play:

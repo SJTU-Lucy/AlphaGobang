@@ -1,6 +1,6 @@
 import sys
 from PyQt5 import QtCore, QtGui
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QMessageBox
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QMessageBox, QProgressBar
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QIcon, QPalette, QPainter
 from alphazero.chess_board import ChessBoard
@@ -23,7 +23,7 @@ class GoBang(QWidget):
     def __init__(self):
         super().__init__()
         # 棋盘
-        self.chessboard = ChessBoard()
+        self.chessboard = ChessBoard(board_len=SIZE)
 
         # 设置背景
         palette = QPalette()
@@ -66,6 +66,14 @@ class GoBang(QWidget):
         # 鼠标始终在最上层
         self.mouse_point.raise_()
         self.setMouseTracking(True)
+        # 进度条，一开始不显示
+        self.pgb = QProgressBar(self)
+        self.pgb.move(0, self.width()-20)
+        self.pgb.resize(250, 20)
+        self.pgb.setMinimum(0)
+        self.pgb.setMaximum(common.n_iters)
+        self.pgb.setVisible(False)
+        self.pgb.setVisible(0)
         self.show()
 
     # 在update时自动调用
@@ -87,20 +95,28 @@ class GoBang(QWidget):
             if not i is None and not j is None:  # 棋子落在棋盘上，排除边缘
                 if self.chessboard.get(i, j) == EMPTY:
                     # 黑子下一步
-                    self.draw(i, j)
                     self.ai_down = False
+                    self.draw(i, j)
                     # 白子下一步
-                    self.AI = AIThread(self.chessboard, PATH)             # 载入模型
-                    # self.AI = AIThread(self.chessboard)                 # 无需模型
+                    # 加载模型+进度条
+                    self.AI = AIThread(self.chessboard, PATH)
+                    self.pgb.setVisible(True)
+                    self.pgb.setValue(0)
                     self.AI.finishSignal.connect(self.AI_draw)
+                    self.AI.progresssignal.connect(self.AI_progress)
                     self.AI.start()
+
+    def AI_progress(self, current):
+        self.pgb.setValue(current)
 
     # AI线程结束信号的对应槽
     def AI_draw(self, i, j):
-        self.draw(i, j)  # AI
-        self.x, self.y = self.map_pixel(i, j)
-        self.ai_down = True
-        self.update()
+        if self.step != 0:
+            self.pgb.setVisible(False)
+            self.draw(i, j)  # AI
+            self.x, self.y = self.map_pixel(i, j)
+            self.ai_down = True
+            self.update()
 
     # 在指定位置落子
     def draw(self, i, j):
@@ -151,10 +167,11 @@ class GoBang(QWidget):
 
         if reply == QMessageBox.Yes:
             self.piece_now = BLACK
-            self.mouse_point.setPixmap(self.black)
+            self.ai_down = True
             self.step = 0
             for piece in self.pieces:
                 piece.clear()
+            self.mouse_point.setPixmap(self.black)
             self.chessboard.clear_board()
             self.update()
         else:

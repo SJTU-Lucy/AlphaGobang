@@ -14,7 +14,7 @@ BLACK = common.black
 
 class ChessBoard:
     """ 棋盘类 """
-    def __init__(self, board_len=9, n_feature_planes=7):
+    def __init__(self, board_len=9, n_feature_planes=6):
         """
         Parameters
         ----------
@@ -140,8 +140,6 @@ class ChessBoard:
         """
         n = self.board_len
         feature_planes = torch.zeros((self.n_feature_planes, n**2))
-        # 最后一张图像代表当前玩家颜色
-        # feature_planes[-1] = self.current_player
         # 添加历史信息
         if self.state:
             actions = np.array(list(self.state.keys()))[::-1]
