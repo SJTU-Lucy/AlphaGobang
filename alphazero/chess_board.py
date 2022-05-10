@@ -25,7 +25,6 @@ class ChessBoard:
             特征平面的个数，必须为偶数
         """
         self.__board = [[EMPTY for n in range(SIZE)] for m in range(SIZE)]
-        self.__dir = [[(-1, 0), (1, 0)], [(0, -1), (0, 1)], [(-1, 1), (1, -1)], [(-1, -1), (1, 1)]]
         self.board_len = board_len
         self.current_player = BLACK
         self.n_feature_planes = n_feature_planes
@@ -36,10 +35,6 @@ class ChessBoard:
     def copy(self):
         """ 复制棋盘 """
         return deepcopy(self)
-
-    # 返回数组对象
-    def board(self):
-        return self.__board
 
     # 获取指定点坐标的状态
     def get(self, x, y):
