@@ -1,4 +1,3 @@
-# coding: utf-8
 from typing import Tuple
 from copy import deepcopy
 from collections import OrderedDict
@@ -13,17 +12,7 @@ BLACK = common.black
 
 
 class ChessBoard:
-    """ 棋盘类 """
-    def __init__(self, board_len=9, n_feature_planes=6):
-        """
-        Parameters
-        ----------
-        board_len: int
-            棋盘边长
-
-        n_feature_planes: int
-            特征平面的个数，必须为偶数
-        """
+    def __init__(self, board_len=common.size, n_feature_planes=common.feature_planes):
         self.__board = [[EMPTY for n in range(SIZE)] for m in range(SIZE)]
         self.board_len = board_len
         self.current_player = BLACK
@@ -33,7 +22,6 @@ class ChessBoard:
         self.previous_action = None
 
     def copy(self):
-        """ 复制棋盘 """
         return deepcopy(self)
 
     # 获取指定点坐标的状态
@@ -41,7 +29,6 @@ class ChessBoard:
         return self.__board[x][y]
 
     def clear_board(self):
-        """ 清空棋盘 """
         self.__board = [[EMPTY for n in range(SIZE)] for m in range(SIZE)]
         self.state.clear()
         self.previous_action = None
@@ -56,18 +43,6 @@ class ChessBoard:
         self.available_actions.remove(action)
 
     def do_action_(self, pos: tuple) -> bool:
-        """ 落子并更新棋盘，只提供给 app 使用
-
-        Parameters
-        ----------
-        pos: Tuple[int, int]
-            落子在棋盘上的位置，范围为 `(0, 0) ~ (board_len-1, board_len-1)`
-
-        Returns
-        -------
-        update_ok: bool
-            是否成功落子
-        """
         action = pos[0]*self.board_len + pos[1]
         if action in self.available_actions:
             self.do_action(action)
@@ -75,18 +50,6 @@ class ChessBoard:
         return False
 
     def is_game_over(self) -> Tuple[bool, int]:
-        """ 判断游戏是否结束
-
-        Returns
-        -------
-        is_over: bool
-            游戏是否结束，分出胜负或者平局则为 `True`, 否则为 `False`
-
-        winner: int
-            游戏赢家，有以下几种:
-            * 如果游戏分出胜负，则为 `ChessBoard.BLACK` 或 `ChessBoard.WHITE`
-            * 如果还有分出胜负或者平局，则为 `None`
-        """
         # 如果下的棋子不到 9 个，就直接判断游戏还没结束
         if len(self.state) < 9:
             return False, None
@@ -126,13 +89,6 @@ class ChessBoard:
         return False, None
 
     def get_feature_planes(self) -> torch.Tensor:
-        """ 棋盘状态特征张量，维度为 `(n_feature_planes, board_len, board_len)`
-
-        Returns
-        -------
-        feature_planes: Tensor of shape `(n_feature_planes, board_len, board_len)`
-            特征平面图像
-        """
         n = self.board_len
         feature_planes = torch.zeros((self.n_feature_planes, n**2))
         # 添加历史信息
@@ -146,10 +102,4 @@ class ChessBoard:
                     feature_planes[2*i, Xt[i:]] = 1
                 if i < len(Yt):
                     feature_planes[2*i+1, Yt[i:]] = 1
-
         return feature_planes.view(self.n_feature_planes, n, n)
-
-
-class ColorError(ValueError):
-    def __init__(self, *args: object) -> None:
-        super().__init__(*args)

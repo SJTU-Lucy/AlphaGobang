@@ -1,16 +1,11 @@
-# coding: utf-8
 from typing import Tuple, Union
-
 import numpy as np
-
 from .chess_board import ChessBoard
 from .node import Node
 from .policy_value_net import PolicyValueNet
 
 
 class AlphaZeroMCTS:
-    """ 基于策略-价值网络的蒙特卡洛搜索树 """
-
     def __init__(self, policy_value_net: PolicyValueNet, c_puct: float = 5, n_iters=2000, is_self_play=False,
                  progesssignal=None) -> None:
         self.c_puct = c_puct
@@ -23,27 +18,13 @@ class AlphaZeroMCTS:
             self.signal = progesssignal
             self.has_signal = True
 
+    # 获得给定棋局下的动作，如果self_play还要输出pi，否则只要action
     def get_action(self, chess_board: ChessBoard) -> Union[Tuple[int, np.ndarray], int]:
-        """ 根据当前局面返回下一步动作
-
-        Parameters
-        ----------
-        chess_board: ChessBoard
-            棋盘
-
-        Returns
-        -------
-        action: int
-            当前局面下的最佳动作
-
-        pi: `np.ndarray` of shape `(board_len^2, )`
-            执行动作空间中每个动作的概率，只在 `is_self_play=True` 模式下返回
-        """
         for i in range(self.n_iters):
             # 拷贝棋盘
             board = chess_board.copy()
-            if self.has_signal and i % 14 == 0:
-                self.signal.emit(i)
+            if self.has_signal and (i+1) % 20 == 0:
+                self.signal.emit(i+1)
 
             # 如果没有遇到叶节点，就一直向下搜索并更新棋盘
             node = self.root
@@ -87,18 +68,17 @@ class AlphaZeroMCTS:
             self.reset_root()
             return action
 
+    # 从访问次数获得概率
     def __getPi(self, visits, T) -> np.ndarray:
-        """ 根据节点的访问次数计算 π """
-        # pi = visits**(1/T) / np.sum(visits**(1/T)) 会出现标量溢出问题，所以使用对数压缩
         x = 1/T * np.log(visits + 1e-11)
         x = np.exp(x - x.max())
         pi = x/x.sum()
         return pi
 
+    # 重置根节点信息
     def reset_root(self):
-        """ 重置根节点 """
         self.root = Node(prior_prob=1, c_puct=self.c_puct, parent=None)
 
+    # 修改self_play状态
     def set_self_play(self, is_self_play: bool):
-        """ 设置蒙特卡洛树的自我博弈状态 """
         self.is_self_play = is_self_play

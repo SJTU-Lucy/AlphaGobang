@@ -1,11 +1,8 @@
-# coding: utf-8
 from math import sqrt
 from typing import Tuple, Iterable, Dict
 
 
 class Node:
-    """ 蒙特卡洛树节点 """
-
     def __init__(self, prior_prob: float, c_puct: float = 5, parent=None):
         """
         Parameters

@@ -1,6 +1,4 @@
-# coding:utf-8
 from collections import deque, namedtuple
-
 import torch
 from torch import Tensor
 from torch.utils.data import Dataset

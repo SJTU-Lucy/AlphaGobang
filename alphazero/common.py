@@ -1,12 +1,11 @@
 empty = -1
 black = 1
 white = 0
-size = 9
+size = 11
 width = 540
 height = 540
 margin = 22
 grid = (width - 2 * margin) / (size - 1)
-piece = 34
+feature_planes = 6
 n_iters = 2000
 modelpath = '../model/history/best_policy_value_net_4400.pth'
-feature_planes = 6
