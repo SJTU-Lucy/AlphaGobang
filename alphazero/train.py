@@ -24,7 +24,7 @@ class PolicyValueLoss(nn.Module):
 
 
 class TrainModel:
-    def __init__(self, board_len=common.size, lr=0.01, n_self_plays=1500, n_mcts_iters=500,
+    def __init__(self, board_len=common.size, lr=0.01, n_self_plays=500, n_mcts_iters=500,
                  n_feature_planes=common.feature_planes, batch_size=500, start_train_size=500, check_frequency=100,
                  n_test_games=10, c_puct=3, is_use_gpu=True, is_save_game=False):
         self.c_puct = c_puct
@@ -39,7 +39,7 @@ class TrainModel:
         self.device = torch.device('cuda:0' if is_use_gpu and cuda.is_available() else 'cpu')
         self.chess_board = ChessBoard(board_len, n_feature_planes)
         # 创建策略-价值网络和蒙特卡洛搜索树
-        self.policy_value_net = PolicyValueNet().to(self.device)
+        self.policy_value_net = self.get_net()
         self.mcts = AlphaZeroMCTS(self.policy_value_net, c_puct=c_puct, n_iters=n_mcts_iters, is_self_play=True)
         # 创建优化器和损失函数
         self.optimizer = optim.Adam(self.policy_value_net.parameters(), lr=lr, weight_decay=1e-4)
@@ -174,3 +174,13 @@ class TrainModel:
         self.chess_board.do_action(action)
         is_over, winner = self.chess_board.is_game_over()
         return is_over, winner
+
+    def get_net(self):
+        model = f'model/best_policy_value_net.pth'
+        if os.path.exists(model):
+            print(f'载入已有模型 {model} ...\n')
+            net = torch.load(model).to(self.device)  # type:PolicyValueNet
+            net.set_device(self.is_use_gpu)
+        else:
+            net = PolicyValueNet().to(self.device)
+        return net
