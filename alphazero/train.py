@@ -24,7 +24,7 @@ class PolicyValueLoss(nn.Module):
 
 
 class TrainModel:
-    def __init__(self, board_len=common.size, lr=0.01, n_self_plays=1000, n_mcts_iters=500,
+    def __init__(self, board_len=common.size, lr=0.01, n_self_plays=500, n_mcts_iters=500,
                  n_feature_planes=common.feature_planes, batch_size=500, start_train_size=500, check_frequency=100,
                  n_test_games=10, c_puct=3, is_use_gpu=True, is_save_game=False):
         self.c_puct = c_puct
