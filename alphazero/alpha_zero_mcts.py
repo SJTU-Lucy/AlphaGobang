@@ -1,8 +1,8 @@
 from typing import Tuple, Union
 import numpy as np
-from .chess_board import ChessBoard
-from .node import Node
-from .policy_value_net import PolicyValueNet
+from alphazero.chess_board import ChessBoard
+from alphazero.node import Node
+from alphazero.policy_value_net import PolicyValueNet
 
 
 class AlphaZeroMCTS:

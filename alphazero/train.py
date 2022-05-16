@@ -4,10 +4,10 @@ import torch.nn.functional as F
 from torch import nn, optim, cuda
 from torch.optim.lr_scheduler import MultiStepLR
 from torch.utils.data import DataLoader
-from .alpha_zero_mcts import AlphaZeroMCTS
-from .chess_board import ChessBoard
-from .policy_value_net import PolicyValueNet
-from .self_play_dataset import SelfPlayData, SelfPlayDataSet
+from alphazero.alpha_zero_mcts import AlphaZeroMCTS
+from alphazero.chess_board import ChessBoard
+from alphazero.policy_value_net import PolicyValueNet
+from alphazero.self_play_dataset import SelfPlayData, SelfPlayDataSet
 import alphazero.common as common
 
 
@@ -24,7 +24,7 @@ class PolicyValueLoss(nn.Module):
 
 
 class TrainModel:
-    def __init__(self, board_len=common.size, lr=0.01, n_self_plays=500, n_mcts_iters=500,
+    def __init__(self, board_len=common.size, lr=0.01, n_self_plays=1000, n_mcts_iters=500,
                  n_feature_planes=common.feature_planes, batch_size=500, start_train_size=500, check_frequency=100,
                  n_test_games=10, c_puct=3, is_use_gpu=True, is_save_game=False):
         self.c_puct = c_puct
@@ -150,14 +150,13 @@ class TrainModel:
                 if is_over:
                     break
 
-        # 如果胜率大于 55%，就保存当前模型为最优模型
-        win_prob = n_wins/self.n_test_games
+        # 如果胜率大于55%，就保存当前模型为最优模型
+        win_prob = n_wins / self.n_test_games
         if win_prob > 0.55:
             torch.save(self.mcts.policy_value_net, model_path)
             print(f'保存当前模型为最优模型，当前模型胜率为：{win_prob:.1%}\n')
         else:
             print(f'保持历史最优模型不变，当前模型胜率为：{win_prob:.1%}\n')
-
         self.mcts.set_self_play(True)
 
     # 保存模型

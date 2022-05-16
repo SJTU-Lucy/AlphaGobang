@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 from torch.nn import functional as F
-from .chess_board import ChessBoard
+from alphazero.chess_board import ChessBoard
 import alphazero.common as common
 
 
