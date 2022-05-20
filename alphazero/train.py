@@ -119,7 +119,7 @@ class TrainModel:
 
     # 测试模型胜率
     def __test_model(self):
-        model_path = 'model/best_policy_value_net.pth'
+        model_path = 'model/model_9.pth'
         # 如果最佳模型不存在保存当前模型为最佳模型
         if not os.path.exists(model_path):
             torch.save(self.policy_value_net, model_path)
@@ -175,7 +175,7 @@ class TrainModel:
         return is_over, winner
 
     def get_net(self):
-        model = f'model/best_policy_value_net.pth'
+        model = f'model/model_9.pth'
         if os.path.exists(model):
             print(f'载入已有模型 {model} ...\n')
             net = torch.load(model).to(self.device)  # type:PolicyValueNet

@@ -1,4 +1,5 @@
 import sys
+sys.path.append("../")
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QMessageBox, QProgressBar
 from PyQt5.QtCore import Qt
@@ -17,6 +18,7 @@ MARGIN = common.margin
 GRID = common.grid
 PIECE = common.piece
 PATH = common.modelpath
+BOARDPATH = common.boardpath
 
 
 class GoBang(QWidget):
@@ -27,8 +29,7 @@ class GoBang(QWidget):
 
         # 设置背景
         palette = QPalette()
-        # palette.setBrush(self.backgroundRole(), QtGui.QBrush(QtGui.QPixmap('img/chessboard_15.jpg')))
-        palette.setBrush(self.backgroundRole(), QtGui.QBrush(QtGui.QPixmap('img/chessboard_11.jpg')))
+        palette.setBrush(self.backgroundRole(), QtGui.QBrush(QtGui.QPixmap(BOARDPATH)))
         self.setPalette(palette)
 
         # 鼠标变成手指形状

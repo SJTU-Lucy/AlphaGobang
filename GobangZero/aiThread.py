@@ -1,6 +1,10 @@
+import sys
+sys.path.append("../")
 import torch
 from PyQt5.QtCore import QThread, pyqtSignal
-from alphazero import common, ChessBoard, AlphaZeroMCTS
+from alphazero.chess_board import ChessBoard
+from alphazero.alpha_zero_mcts import AlphaZeroMCTS
+import alphazero.common as common
 
 SIZE = common.size
 

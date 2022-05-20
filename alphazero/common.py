@@ -1,7 +1,7 @@
 empty = -1
 black = 1
 white = 0
-size = 11
+size = 9
 width = 540
 height = 540
 margin = 22
@@ -9,5 +9,5 @@ grid = (width - 2 * margin) / (size - 1)
 feature_planes = 6
 piece = 34
 n_iters = 2000
-# modelpath = '../model/9/history/best_policy_value_net_4400.pth'
-modelpath = '../model/11/best_policy_value_net.pth'
+modelpath = '../model/' + "model_{}.pth".format(size, size)
+boardpath = 'img/chessboard_{}.jpg'.format(size)
