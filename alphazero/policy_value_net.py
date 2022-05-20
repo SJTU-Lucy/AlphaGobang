@@ -88,9 +88,7 @@ class PolicyValueNet(nn.Module):
         feature_planes = chess_board.get_feature_planes().to(self.device)
         feature_planes.unsqueeze_(0)
         p_hat, value = self(feature_planes)
-        # 将对数概率转换为概率
         p = torch.exp(p_hat).flatten()
-        # 只取可行的落点
         if self.is_use_gpu:
             p = p[chess_board.available_actions].cpu().detach().numpy()
         else:

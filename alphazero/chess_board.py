@@ -24,7 +24,6 @@ class ChessBoard:
     def copy(self):
         return deepcopy(self)
 
-    # 获取指定点坐标的状态
     def get(self, x, y):
         return self.__board[x][y]
 
@@ -50,7 +49,6 @@ class ChessBoard:
         return False
 
     def is_game_over(self) -> Tuple[bool, int]:
-        # 如果下的棋子不到 9 个，就直接判断游戏还没结束
         if len(self.state) < 9:
             return False, None
 
@@ -59,11 +57,10 @@ class ChessBoard:
         player = self.state[act]
         row, col = act//n, act % n
 
-        # 搜索方向
-        directions = [[(0, -1),  (0, 1)],   # 水平搜索
-                      [(-1, 0),  (1, 0)],   # 竖直搜索
-                      [(-1, -1), (1, 1)],   # 主对角线搜索
-                      [(1, -1),  (-1, 1)]]  # 副对角线搜索
+        directions = [[(0, -1),  (0, 1)],
+                      [(-1, 0),  (1, 0)],
+                      [(-1, -1), (1, 1)],
+                      [(1, -1),  (-1, 1)]]
 
         for i in range(4):
             count = 1
@@ -74,15 +71,12 @@ class ChessBoard:
                     row_t = row_t + directions[i][j][0]
                     col_t = col_t + directions[i][j][1]
                     if 0 <= row_t < n and 0 <= col_t < n and self.state.get(row_t*n+col_t, EMPTY) == player:
-                        # 遇到相同颜色时 count+1
                         count += 1
                     else:
                         flag = False
-            # 分出胜负
             if count >= 5:
                 return True, player
 
-        # 平局
         if not self.available_actions:
             return True, None
 
