@@ -163,8 +163,10 @@ class GoBang(QWidget):
     def gameover(self, winner):
         if winner == BLACK:
             reply = QMessageBox.question(self, 'You Win!', 'Continue?', QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-        else:
+        elif winner == WHITE:
             reply = QMessageBox.question(self, 'You Lost!', 'Continue?', QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        else:
+            reply = QMessageBox.question(self, 'Draw!', 'Continue?', QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
 
         if reply == QMessageBox.Yes:
             self.piece_now = BLACK

@@ -25,6 +25,8 @@ class ChessBoard:
         return deepcopy(self)
 
     def get(self, x, y):
+        if x < 0 or x >= SIZE or y < 0 or y >= SIZE:
+            return None
         return self.__board[x][y]
 
     def clear_board(self):
@@ -74,8 +76,46 @@ class ChessBoard:
                         count += 1
                     else:
                         flag = False
-            if count >= 5:
+            if count == 5:
                 return True, player
+            if count > 5 and player == BLACK:
+                return True, WHITE
+
+        if player == BLACK:
+            threeline = 0
+            fourline = 0
+            for i in range(4):
+                foundthree = False
+                foundfour = False
+                for j in range(2):
+                    down = directions[i][j]
+                    down1 = self.get(row + down[0], col + down[1])
+                    down2 = self.get(row + down[0] * 2, col + down[1] * 2)
+                    up = directions[i][1 - j]
+                    up1 = self.get(row + up[0], col + up[1])
+                    up2 = self.get(row + up[0] * 2, col + up[1] * 2)
+                    up3 = self.get(row + up[0] * 3, col + up[1] * 3)
+                    up4 = self.get(row + up[0] * 4, col + up[1] * 4)
+                    if down1 == EMPTY and down2 == EMPTY and up1 == BLACK and up2 == BLACK and up3 == EMPTY:
+                        foundthree = True
+                    if down1 == EMPTY and up1 == EMPTY and up2 == BLACK and up3 == BLACK and up4 == EMPTY:
+                        foundthree = True
+                    if down1 == EMPTY and up1 == BLACK and up2 == BLACK and up3 == EMPTY and up4 == EMPTY:
+                        foundthree = True
+                    if down1 == BLACK and down2 == EMPTY and up1 == BLACK and up2 == EMPTY and up3 == EMPTY:
+                        foundthree = True
+                    if down1 == EMPTY and up1 == BLACK and up2 == BLACK and up3 == BLACK and up4 == EMPTY:
+                        foundfour = True
+                    if down1 == BLACK and down2 == EMPTY and up1 == BLACK and up2 == BLACK and up3 == EMPTY:
+                        foundfour = True
+                if foundthree:
+                    threeline += 1
+                if foundfour:
+                    fourline += 1
+            if threeline >= 2 or fourline >= 2:
+                return True, WHITE
+            if threeline >= 2:
+                return True, WHITE
 
         if not self.available_actions:
             return True, None
