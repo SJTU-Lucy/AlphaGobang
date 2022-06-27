@@ -1,6 +1,8 @@
-# EI314-3E
-EI314 Project Alpha Gobang Zero
+# README
 
-Run GobangZero/gobangGUI.py to play
+##### 训练：运行train.py
 
-Run train.py to train model
+##### 对弈：运行GobangZero/gobangGUI.
+
+###### 修改棋盘尺寸：alphazero/common.py中的size，可选9和11
+
