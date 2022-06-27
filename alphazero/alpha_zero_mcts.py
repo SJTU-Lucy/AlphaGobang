@@ -1,4 +1,3 @@
-from typing import Tuple, Union
 import numpy as np
 from alphazero.chess_board import ChessBoard
 from alphazero.node import Node
@@ -6,8 +5,8 @@ from alphazero.policy_value_net import PolicyValueNet
 
 
 class AlphaZeroMCTS:
-    def __init__(self, policy_value_net: PolicyValueNet, c_puct: float = 5, n_iters=2000, is_self_play=False,
-                 progesssignal=None) -> None:
+    def __init__(self, policy_value_net: PolicyValueNet, c_puct=5, n_iters=2000, is_self_play=False,
+                 progesssignal=None):
         self.c_puct = c_puct
         self.n_iters = n_iters
         self.is_self_play = is_self_play
@@ -18,7 +17,7 @@ class AlphaZeroMCTS:
             self.signal = progesssignal
             self.has_signal = True
 
-    def get_action(self, chess_board: ChessBoard) -> Union[Tuple[int, np.ndarray], int]:
+    def get_action(self, chess_board: ChessBoard):
         for i in range(self.n_iters):
             board = chess_board.copy()
             if self.has_signal and (i+1) % 20 == 0:
@@ -59,7 +58,7 @@ class AlphaZeroMCTS:
             return action
 
     def __getPi(self, visits, T) -> np.ndarray:
-        x = 1/T * np.log(visits + 1e-11)
+        x = 1 / T * np.log(visits + 1e-11)
         x = np.exp(x - x.max())
         pi = x/x.sum()
         return pi

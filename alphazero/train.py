@@ -23,7 +23,7 @@ class PolicyValueLoss(nn.Module):
 
 
 class TrainModel:
-    def __init__(self, board_len=common.size, lr=0.01, n_self_plays=500, n_mcts_iters=500,
+    def __init__(self, board_len=common.size, lr=0.01, n_self_plays=100, n_mcts_iters=500,
                  n_feature_planes=common.feature_planes, batch_size=500, start_train_size=500, check_frequency=100,
                  n_test_games=10, c_puct=3, is_use_gpu=True, is_save_game=False):
         self.c_puct = c_puct
@@ -72,7 +72,7 @@ class TrainModel:
 
     def train(self):
         for i in range(self.n_self_plays):
-            print(f'Starting Game: {i+1}')
+            print(f'开始第 {i+1} 轮训练')
             self.dataset.append(self.__self_play())
 
             if len(self.dataset) >= self.start_train_size:
@@ -122,20 +122,17 @@ class TrainModel:
                     break
 
         win_prob = n_wins / self.n_test_games
+        print(f"获胜概率为: {win_prob:.1%}\n")
         if win_prob > 0.55:
             torch.save(self.mcts.policy_value_net, model_path)
-            print(f'replacing best model: winning probability of {win_prob:.1%}\n')
-        else:
-            print(f'keeping best model: winning probability of {win_prob:.1%}\n')
         self.mcts.set_self_play(True)
 
     # 保存模型
-    def save_model(self, model_name: str, loss_name: str, game_name: str):
+    def save_model(self):
         os.makedirs('model', exist_ok=True)
         path = f'model/best_model.pth'
         self.policy_value_net.eval()
         torch.save(self.policy_value_net, path)
-        print("save current model")
 
     def __do_mcts_action(self, mcts):
         action = mcts.get_action(self.chess_board)
@@ -146,7 +143,7 @@ class TrainModel:
     def get_net(self):
         model = f'model/best_model.pth'
         if os.path.exists(model):
-            print("Load existing model")
+            print("载入现有模型")
             net = torch.load(model).to(self.device)
             net.set_device(self.is_use_gpu)
         else:

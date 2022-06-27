@@ -43,14 +43,14 @@ class ChessBoard:
         self.current_player = WHITE + BLACK - self.current_player
         self.available_actions.remove(action)
 
-    def do_action_(self, pos: tuple) -> bool:
+    def do_action_(self, pos):
         action = pos[0]*self.board_len + pos[1]
         if action in self.available_actions:
             self.do_action(action)
             return True
         return False
 
-    def is_game_over(self) -> Tuple[bool, int]:
+    def is_game_over(self):
         if len(self.state) < 9:
             return False, None
 
@@ -80,7 +80,7 @@ class ChessBoard:
                 return True, player
             if count > 5 and player == BLACK:
                 return True, WHITE
-
+        # 禁手规则
         if player == BLACK:
             threeline = 0
             fourline = 0
@@ -122,7 +122,7 @@ class ChessBoard:
 
         return False, None
 
-    def get_feature_planes(self) -> torch.Tensor:
+    def get_feature_planes(self):
         n = self.board_len
         feature_planes = torch.zeros((self.n_feature_planes, n**2))
         # 添加历史信息

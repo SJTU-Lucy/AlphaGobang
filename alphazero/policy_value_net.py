@@ -6,7 +6,7 @@ import alphazero.common as common
 
 
 class ConvBlock(nn.Module):
-    def __init__(self, in_channels: int, out_channel: int, kernel_size, padding=0):
+    def __init__(self, in_channels, out_channel, kernel_size, padding=0):
         super().__init__()
         self.conv = nn.Conv2d(in_channels, out_channel,
                               kernel_size=kernel_size, padding=padding)

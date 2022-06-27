@@ -13,7 +13,7 @@ class AIThread(QThread):
     finishSignal = pyqtSignal(int, int)
     progresssignal = pyqtSignal(int)
 
-    def __init__(self, chessBoard: ChessBoard, model=None, c_puct=5, n_iters=2000, is_use_gpu=True, parent=None):
+    def __init__(self, chessBoard: ChessBoard, model=None, c_puct=1, n_iters=2000, is_use_gpu=True, parent=None):
         super().__init__(parent=parent)
         self.chessBoard = chessBoard
         self.c_puct = c_puct
