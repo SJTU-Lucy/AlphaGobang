@@ -44,6 +44,7 @@ class TrainModel:
         self.lr_scheduler = MultiStepLR(self.optimizer, [1500, 2500], gamma=0.1)
         self.dataset = SelfPlayDataSet(board_len)
         self.loss_record = []
+        self.updatecount = 0
 
     def __self_play(self):
         # 初始化棋盘和数据容器
@@ -133,6 +134,7 @@ class TrainModel:
         path = f'model/best_model.pth'
         self.policy_value_net.eval()
         torch.save(self.policy_value_net, path)
+        self.updatecount += 1
 
     def __do_mcts_action(self, mcts):
         action = mcts.get_action(self.chess_board)
